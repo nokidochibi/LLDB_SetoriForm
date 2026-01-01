@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>aiko セトリ投稿フォーム</title>
+  <!-- 並べ替え用ライブラリ SortableJS -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   <style>
     /* ベーススタイル（スマホ最適化: 16px基準） */
     body {
@@ -11,46 +13,46 @@
       background-color: #fce4ec;
       color: #444;
       margin: 0;
-      padding: 15px;
+      padding: 10px; /* 余白削減 */
       font-size: 16px;
     }
     .container {
       max-width: 600px;
       margin: 0 auto;
       background-color: #fff;
-      padding: 20px;
+      padding: 15px; /* 余白削減 */
       border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     h1 {
       color: #d81b60;
       text-align: center;
-      font-size: 22px;
+      font-size: 20px; /* 少し縮小 */
       border-bottom: 2px solid #f06292;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       margin-top: 0;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
-    .section { margin-bottom: 30px; }
+    .section { margin-bottom: 20px; /* 余白削減 */ }
     .section-title {
-      font-size: 18px;
+      font-size: 16px; /* 少し縮小 */
       font-weight: bold;
       color: #c2185b;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border-left: 4px solid #d81b60;
-      padding-left: 10px;
+      padding-left: 8px;
     }
     
     /* 入力フォーム共通 */
     select, input[type="file"], input[type="text"] {
-      padding: 12px;
+      padding: 8px 10px; /* 余白削減 */
       border: 1px solid #ddd;
       border-radius: 6px;
       background-color: #fafafa;
       font-size: 16px;
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: 15px;
+      margin-bottom: 8px; /* 余白削減 */
     }
     
     /* ライブ詳細表示 */
@@ -58,112 +60,148 @@
       background-color: #f9f9f9;
       border: 1px dashed #e0e0e0;
       border-radius: 6px;
-      padding: 12px;
+      padding: 8px;
       margin-top: -5px;
-      font-size: 14px;
+      font-size: 13px;
       color: #555;
     }
     
     /* セットリスト入力エリア */
     #setlist-container {
       counter-reset: song-counter;
-      padding-left: 0; /* スマホ用に余白削除 */
+      padding-left: 0;
     }
     .song-entry {
       border: 1px solid #eee;
       border-radius: 8px;
-      padding: 15px 15px 15px 35px; /* 左側に番号用スペース */
-      margin-bottom: 15px;
+      padding: 10px 10px 10px 45px; /* 左側にハンドルと番号用スペース */
+      margin-bottom: 10px; /* 余白削減 */
       background-color: #fff9fa;
       position: relative;
     }
+    
+    /* 並べ替えハンドル */
+    .song-handle {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #d81b60;
+      touch-action: none; /* スクロール防止 */
+      background-color: rgba(255, 200, 210, 0.2); /* 掴めるエリアを可視化 */
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    .song-handle::after {
+      content: "≡";
+      font-size: 24px;
+      line-height: 1;
+      margin-bottom: 20px; /* 番号との位置調整 */
+    }
+
     /* 曲番号 */
     .song-entry::before {
       counter-increment: song-counter;
       content: counter(song-counter);
       position: absolute;
-      left: 5px;
-      top: 15px;
-      font-size: 14px;
+      left: 8px;
+      top: 35px; /* ハンドルの下に配置 */
+      font-size: 12px;
       font-weight: bold;
       color: #fff;
       background-color: #f06292;
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
       text-align: center;
+      pointer-events: none; /* ドラッグの邪魔にならないように */
     }
+
+    /* ドラッグ中のスタイル */
+    .sortable-ghost {
+      opacity: 0.4;
+      background-color: #fce4ec;
+      border: 2px dashed #d81b60;
+    }
+
     /* 削除ボタン */
     .btn-delete {
-      position: absolute; top: 5px; right: 5px;
+      position: absolute; top: 2px; right: 2px;
       background: #ffcdd2; color: #c62828; border: none; border-radius: 50%;
-      width: 30px; height: 30px; line-height: 30px; font-size: 18px;
+      width: 28px; height: 28px; line-height: 28px; font-size: 16px;
       cursor: pointer; padding: 0;
+      z-index: 10;
     }
 
     /* 1行目: 曲名選択 */
     .song-select {
-      margin-bottom: 10px;
-      /* 右側に削除ボタンがあるため少し余裕を持たせる場合は調整 */
+      margin-bottom: 5px;
       width: 100%; 
     }
 
     /* 2行目: メドレーチェック */
     .checkbox-group {
-      margin-top: 5px;
-      margin-bottom: 10px;
+      margin-top: 2px;
+      margin-bottom: 5px;
     }
     .checkbox-group label {
       display: flex;
       align-items: center;
-      font-size: 15px;
+      font-size: 14px;
       cursor: pointer;
     }
     input[type="checkbox"] {
-      transform: scale(1.2);
+      transform: scale(1.1);
       margin-left: 0;
-      margin-right: 10px;
+      margin-right: 8px;
       width: auto;
     }
 
     /* 3,4行目: アンコールラジオボタン */
     .radio-group {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3列レイアウト */
-      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px; /* 間隔削減 */
       margin-top: 5px;
     }
     .radio-group-title {
-      grid-column: 1 / -1; /* タイトルは全幅 */
-      font-size: 14px;
+      grid-column: 1 / -1;
+      font-size: 12px;
       color: #666;
-      margin-bottom: 2px;
+      margin-bottom: 0;
     }
     .radio-group label {
       display: flex;
       align-items: center;
-      font-size: 13px; /* 少し小さめにして収まりよく */
+      font-size: 12px;
       background: #fff;
       border: 1px solid #eee;
       border-radius: 4px;
-      padding: 6px;
+      padding: 4px;
       cursor: pointer;
     }
     input[type="radio"] {
       appearance: none; -webkit-appearance: none;
-      width: 16px; height: 16px;
+      width: 14px; height: 14px;
       border: 2px solid #c2185b; border-radius: 50%;
-      padding: 2px; margin-right: 6px;
+      padding: 2px; margin-right: 4px;
       flex-shrink: 0;
     }
     input[type="radio"]:checked { background-color: #c2185b; }
     
     /* ボタン類 */
     .btn {
-      padding: 14px; border: none; border-radius: 6px;
-      cursor: pointer; font-size: 16px; font-weight: bold;
-      width: 100%; margin-bottom: 10px;
+      padding: 10px; /* 余白削減 */
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 15px; font-weight: bold;
+      width: 100%; margin-bottom: 8px;
     }
     .btn:disabled { background-color: #ccc; cursor: not-allowed; }
     .btn-primary { background-color: #d81b60; color: white; }
@@ -177,16 +215,16 @@
     }
     #loader-content, #modal-content, #success-modal-content {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 25px; border-radius: 12px;
-      text-align: center; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto;
-      font-size: 16px;
+      background: white; padding: 20px; border-radius: 12px;
+      text-align: center; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+      font-size: 15px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    #modal-content h2, #success-modal-content h2 { font-size: 20px; color: #d81b60; margin-top: 0; }
-    #confirmation-preview { text-align: left; font-size: 15px; }
-    #confirmation-preview ol { padding-left: 20px; }
-    #confirmation-preview ol li { margin-bottom: 8px; }
-    #image-preview, #confirmation-image-preview { max-width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; }
+    #modal-content h2, #success-modal-content h2 { font-size: 18px; color: #d81b60; margin-top: 0; margin-bottom: 15px; }
+    #confirmation-preview { text-align: left; font-size: 14px; }
+    #confirmation-preview ol { padding-left: 20px; margin-top: 5px; }
+    #confirmation-preview ol li { margin-bottom: 5px; }
+    #image-preview, #confirmation-image-preview { max-width: 100%; margin-top: 8px; border: 1px solid #ddd; border-radius: 4px; }
     #success-modal-content a { color: #d81b60; text-decoration: underline; font-weight: bold; }
   </style>
 </head>
@@ -230,7 +268,11 @@
   <!-- テンプレート -->
   <template id="song-entry-template">
     <div class="song-entry">
+      <!-- ドラッグハンドル -->
+      <div class="song-handle"></div>
+      
       <button type="button" class="btn-delete" onclick="this.parentElement.remove()">×</button>
+      
       <!-- 1行目: 曲名 -->
       <select class="song-select"><option value="">-- 曲を選択してください --</option></select>
       
@@ -286,6 +328,14 @@
         addSongEntry();
         hideLoader();
       }).catch(e => { alert('読み込み失敗: ' + e); hideLoader(); });
+      
+      // SortableJSの初期化
+      const el = document.getElementById('setlist-container');
+      new Sortable(el, {
+        animation: 150,
+        handle: '.song-handle', // ハンドルクラスでのみドラッグ可能
+        ghostClass: 'sortable-ghost' // ドラッグ中のクラス
+      });
       
       document.getElementById('image-file').addEventListener('change', handleImageUpload);
       document.getElementById('live-select').addEventListener('change', function() {
