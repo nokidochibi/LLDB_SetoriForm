@@ -5,163 +5,210 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>aiko セトリ投稿フォーム</title>
   <style>
+    :root {
+      --primary-color: #d81b60;
+      --primary-light: #f06292;
+      --bg-color: #fce4ec;
+      --text-color: #333;
+      --border-radius: 8px;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #fce4ec;
-      color: #444;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       margin: 0;
-      padding: 20px;
+      padding: 15px;
+      line-height: 1.5;
     }
+
     .container {
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
       background-color: #fff;
-      padding: 30px 40px;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+
     h1 {
-      color: #d81b60;
+      color: var(--primary-color);
       text-align: center;
-      font-size: 42px;
-      border-bottom: 3px solid #f06292;
-      padding-bottom: 15px;
+      font-size: 24px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 10px;
       margin-top: 0;
+      margin-bottom: 25px;
     }
-    .section { margin-bottom: 40px; }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
     .section-title {
-      font-size: 40px;
+      font-size: 18px;
       font-weight: bold;
       color: #c2185b;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--primary-color);
+      padding-left: 10px;
     }
+
+    /* フォーム要素の共通スタイル */
     select, input[type="file"], input[type="text"] {
-      padding: 18px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      background-color: #fafafa;
-      font-size: 35px;
       width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      background-color: #fafafa;
+      font-size: 16px; /* スマホで読みやすいサイズ */
       box-sizing: border-box;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      appearance: none; /* スマホのデフォルトスタイルをリセット */
     }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      background-color: white;
+    }
+
     .live-details {
-      background-color: #f9f9f9;
-      border: 1px dashed #e0e0e0;
+      background-color: #fce4ec;
+      border: 1px dashed var(--primary-light);
       border-radius: 6px;
-      padding: 15px;
+      padding: 12px;
       margin-top: -5px;
-      font-size: 32px;
+      font-size: 14px;
       color: #555;
+      line-height: 1.4;
     }
+
+    /* セットリスト入力エリア */
     #setlist-container {
       counter-reset: song-counter;
-      padding-left: 60px;
+      /* スマホでは左側の余白を少し減らす */
+      padding-left: 0; 
     }
+
     .song-entry {
-      border: 1px solid #f0f0f0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 25px;
+      border: 1px solid #eee;
+      border-radius: var(--border-radius);
+      padding: 15px 15px 15px 40px; /* 左側に番号用のスペースを確保 */
+      margin-bottom: 20px;
       background-color: #fff9fa;
       position: relative;
     }
+
     .song-entry::before {
       counter-increment: song-counter;
       content: counter(song-counter);
       position: absolute;
-      left: -60px;
-      top: 25px;
-      font-size: 35px;
+      left: 5px; /* カードの内側に配置 */
+      top: 15px;
+      font-size: 14px;
       font-weight: bold;
-      color: #c2185b;
-      background-color: #fce4ec;
+      color: #fff;
+      background-color: var(--primary-light);
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      line-height: 50px;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
       text-align: center;
     }
-    .checkbox-group { margin-top: 20px; }
-    .checkbox-group label {
+
+    /* チェックボックス・ラジオボタン周り */
+    .checkbox-group, .radio-group {
+      margin-top: 15px;
+    }
+
+    .checkbox-group label, .radio-group label {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      width: auto;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-weight: normal;
-      font-size: 35px;
-    }
-    input[type="checkbox"] {
-      transform: scale(2.0);
-      margin-left: 20px;
-    }
-    .radio-group {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .radio-group .radio-group-title {
-      font-size: 35px;
-      font-weight: normal;
-      margin-right: 15px;
-    }
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      margin-right: 15px;
-      font-size: 35px;
-      margin-bottom: 10px;
-    }
-    input[type="radio"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 32px;
-      height: 32px;
-      border: 4px solid #c2185b;
-      border-radius: 50%;
-      background-clip: content-box;
-      padding: 6px;
-      margin-right: 10px;
-      transition: background-color 0.2s;
-    }
-    input[type="radio"]:checked { background-color: #c2185b; }
-    .btn {
-      padding: 20px 25px;
-      border: none;
-      border-radius: 8px;
+      font-size: 15px;
       cursor: pointer;
-      font-size: 35px;
+      padding: 5px 0;
+    }
+
+    /* カスタムチェックボックス・ラジオのサイズ調整 */
+    input[type="checkbox"], input[type="radio"] {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      margin-left: 0;
+      flex-shrink: 0;
+      accent-color: var(--primary-color); /* モダンブラウザ用 */
+      transform: none; /* 以前のscale拡大をリセット */
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column; /* スマホでは縦並びの方が押しやすい */
+      gap: 5px;
+    }
+
+    .radio-group-title {
+      font-size: 14px;
       font-weight: bold;
-      transition: background-color 0.3s;
+      color: #666;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* ボタン類 */
+    .btn {
+      padding: 14px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+      text-align: center;
     }
+
+    .btn:active {
+      opacity: 0.8;
+    }
+
     .btn:disabled {
-      background-color: #cccccc;
+      background-color: #ccc !important;
       cursor: not-allowed;
     }
-    .btn-primary { background-color: #d81b60; color: white; }
+
+    .btn-primary { background-color: var(--primary-color); color: white; }
     .btn-secondary { background-color: #757575; color: white; }
-    .btn-add { background-color: #ec407a; color: white; margin-top: 10px; }
+    .btn-add { background-color: #ec407a; color: white; margin-top: 5px; }
+
     .btn-delete {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: #ffcdd2;
+      background: #ffebee;
       color: #c62828;
       border: none;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
+      width: 32px;
+      height: 32px;
       font-weight: bold;
       cursor: pointer;
-      line-height: 50px;
+      line-height: 32px;
       text-align: center;
-      font-size: 32px;
+      font-size: 18px;
+      padding: 0;
     }
+
+    /* モーダル */
     #loader, #modal-overlay, #success-modal-overlay {
       display: none;
       position: fixed;
@@ -169,36 +216,47 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      backdrop-filter: blur(2px);
     }
+
     #loader-content, #modal-content, #success-modal-content {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       background: white;
-      padding: 20px 40px;
-      border-radius: 8px;
+      padding: 25px;
+      border-radius: 12px;
       text-align: center;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
+      width: 85%;
+      max-width: 500px;
+      max-height: 85vh;
       overflow-y: auto;
-      font-size: 35px;
+      box-sizing: border-box;
+      font-size: 16px;
     }
-    #loader-message { font-size: 35px; }
-    #modal-content h2, #success-modal-content h2 { font-size: 42px; color: #d81b60; }
-    #confirmation-preview { text-align: left; }
-    #confirmation-preview ol li { margin-bottom: 15px; }
+
+    #loader-message { font-size: 16px; font-weight: bold; }
+    #modal-content h2, #success-modal-content h2 { font-size: 20px; color: var(--primary-color); margin-top: 0; }
+    
+    #confirmation-preview { text-align: left; font-size: 15px; }
+    #confirmation-preview h3 { font-size: 16px; border-bottom: 1px solid #eee; margin-top: 15px; padding-bottom: 5px; }
+    #confirmation-preview ol { padding-left: 25px; }
+    #confirmation-preview li { margin-bottom: 8px; }
+
     #image-preview, #confirmation-image-preview {
       max-width: 100%;
+      height: auto;
       margin-top: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
-    #success-modal-content p { text-align: left; line-height: 1.6; }
-    #success-modal-content a { color: #d81b60; text-decoration: underline; font-weight: bold; }
+
+    #success-modal-content p { text-align: left; line-height: 1.6; font-size: 15px; }
+    #success-modal-content a { color: var(--primary-color); text-decoration: underline; font-weight: bold; }
+
   </style>
 </head>
 <body>
@@ -206,6 +264,7 @@
     <h1>aiko セットリスト投稿フォーム</h1>
     <form id="setlist-form">
 
+      <!-- A. ライブ情報 -->
       <div class="section">
         <div class="section-title">ライブ情報</div>
         <select id="live-select" name="live-select" required>
@@ -214,17 +273,20 @@
         <div id="live-details" class="live-details" style="display: none;"></div>
       </div>
 
+      <!-- B. 投稿者情報 -->
       <div class="section">
         <div class="section-title">投稿者 (任意)</div>
         <input type="text" id="submitter-name" placeholder="お名前を入力できます">
       </div>
 
+      <!-- C. セットリスト情報 -->
       <div class="section">
         <div class="section-title">セットリスト情報</div>
         <div id="setlist-container"></div>
-        <button type="button" class="btn btn-add" onclick="addSongEntry()">曲を追加</button>
+        <button type="button" class="btn btn-add" onclick="addSongEntry()">＋ 曲を追加</button>
       </div>
 
+      <!-- D. 画像添付 -->
       <div class="section">
         <div class="section-title">セトリボード画像 (任意)</div>
         <input type="file" id="image-file" accept="image/*">
@@ -236,6 +298,7 @@
     </form>
   </div>
 
+  <!-- 曲入力欄テンプレート -->
   <template id="song-entry-template">
     <div class="song-entry">
       <button type="button" class="btn-delete" onclick="this.parentElement.remove()">×</button>
@@ -243,21 +306,23 @@
         <option value="">-- 曲を選択してください --</option>
       </select>
       <div class="checkbox-group">
-        <label><span>この曲はメドレー？</span><input type="checkbox" class="is-medley"></label>
+        <label><input type="checkbox" class="is-medley"><span>この曲はメドレー</span></label>
       </div>
       <div class="radio-group">
-        <span class="radio-group-title">この曲はアンコール</span>
-        <label><input type="radio" name="encore-radio" value="none" checked><span>ではない</span></label>
-        <label><input type="radio" name="encore-radio" value="_アンコール #1"><span>１回目</span></label>
-        <label><input type="radio" name="encore-radio" value="_アンコール #2"><span>２回目</span></label>
-        <label><input type="radio" name="encore-radio" value="_アンコール #3"><span>３回目</span></label>
-        <label><input type="radio" name="encore-radio" value="_アンコール #4"><span>４回目</span></label>
-        <label><input type="radio" name="encore-radio" value="_アンコール #5"><span>５回目</span></label>
+        <span class="radio-group-title">アンコール指定:</span>
+        <label><input type="radio" name="encore-radio" value="none" checked><span>指定なし</span></label>
+        <label><input type="radio" name="encore-radio" value="_アンコール #1"><span>アンコール １回目</span></label>
+        <label><input type="radio" name="encore-radio" value="_アンコール #2"><span>アンコール ２回目</span></label>
+        <label><input type="radio" name="encore-radio" value="_アンコール #3"><span>アンコール ３回目</span></label>
+        <label><input type="radio" name="encore-radio" value="_アンコール #4"><span>アンコール ４回目</span></label>
+        <label><input type="radio" name="encore-radio" value="_アンコール #5"><span>アンコール ５回目</span></label>
       </div>
     </div>
   </template>
 
+  <!-- 各種モーダル -->
   <div id="loader"><div id="loader-content"><p id="loader-message">データを読み込み中...</p></div></div>
+  
   <div id="modal-overlay">
     <div id="modal-content">
       <h2>入力内容の確認</h2>
@@ -268,6 +333,7 @@
       </div>
     </div>
   </div>
+
   <div id="success-modal-overlay">
     <div id="success-modal-content">
       <h2>投稿完了</h2>
@@ -277,7 +343,9 @@
   </div>
 
   <script>
+    // ▼▼▼ ここにGASのウェブアプリURLを貼り付けてください ▼▼▼
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxmxttUQvjW6Gm3vCOdkjwwGbbfgADozI3MU869GGEFjRqLfo8ppPBz_F5F-_ShrY3c/exec";
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
     let sheetData = { liveInfo: [], songList: [] };
 
@@ -405,7 +473,8 @@
                 const isMedley = entry.querySelector('.is-medley').checked ? ' (メドレー)' : '';
                 const encoreRadio = entry.querySelector('input[name^="encore-radio"]:checked');
                 const encoreLabel = encoreRadio.nextElementSibling.textContent;
-                const encoreText = (encoreRadio.value !== 'none') ? ` (アンコール ${encoreLabel})` : '';
+                // 表示用に「アンコール」の文字が重複しないように調整
+                const encoreText = (encoreRadio.value !== 'none') ? ` (${encoreLabel})` : '';
                 previewHtml += `<li>${songTitle}${isMedley}${encoreText}</li>`;
             }
         });
@@ -459,9 +528,6 @@
             };
         }
 
-        // fetchでPOST送信 (特殊な設定: no-corsではなく、戻り値を受け取るために通常のPOST)
-        // GAS側でContentServiceを使用しているため、redirect: 'follow' が重要になる場合がありますが
-        // Beacon APIや通常のPOSTでJSONを送ります。
         fetch(GAS_API_URL, {
           method: 'POST',
           body: JSON.stringify(formData)
